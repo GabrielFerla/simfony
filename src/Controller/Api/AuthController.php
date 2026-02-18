@@ -71,6 +71,7 @@ final class AuthController extends AbstractController
                 'id' => $user->getId()?->toRfc4122(),
                 'email' => $user->getEmail(),
                 'displayName' => $user->getDisplayName(),
+                'timezone' => $user->getTimezone(),
             ],
         ], Response::HTTP_CREATED);
     }
@@ -88,7 +89,15 @@ final class AuthController extends AbstractController
 
         $token = $this->jwtManager->create($user);
 
-        return new JsonResponse(['token' => $token]);
+        return new JsonResponse([
+            'token' => $token,
+            'user' => [
+                'id' => $user->getId()?->toRfc4122(),
+                'email' => $user->getEmail(),
+                'displayName' => $user->getDisplayName(),
+                'timezone' => $user->getTimezone(),
+            ],
+        ]);
     }
 
     /**
@@ -110,6 +119,7 @@ final class AuthController extends AbstractController
                 'id' => $user->getId()?->toRfc4122(),
                 'email' => $user->getEmail(),
                 'displayName' => $user->getDisplayName(),
+                'timezone' => $user->getTimezone(),
             ],
         ]);
     }
