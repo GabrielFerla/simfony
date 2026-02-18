@@ -1,0 +1,269 @@
+{
+	"info": {
+		"_postman_id": "symfony-api-docker",
+		"name": "Symfony API (Docker)",
+		"description": "Collection para testar a API do projeto Symfony rodando no Docker (http://localhost:8000).\n\n**Uso:**\n1. Suba o ambiente: `docker compose up -d`\n2. Execute \"Auth - Register\" ou \"Auth - Login\" para obter o token\n3. O token é salvo automaticamente na variável `token`\n4. As demais requisições usam esse token no header Authorization",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000"
+		},
+		{
+			"key": "token",
+			"value": ""
+		}
+	],
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const json = pm.response.json();",
+									"    if (json.token) {",
+									"        pm.collectionVariables.set('token', json.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"usuario@exemplo.com\",\n  \"password\": \"senha123\",\n  \"displayName\": \"Meu Nome\"\n}"
+						},
+						"url": "{{base_url}}/api/auth/register",
+						"description": "Registra um novo usuário. Retorna token e dados do usuário. O token é salvo automaticamente."
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const json = pm.response.json();",
+									"    if (json.token) {",
+									"        pm.collectionVariables.set('token', json.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"usuario@exemplo.com\",\n  \"password\": \"senha123\"\n}"
+						},
+						"url": "{{base_url}}/api/auth/login",
+						"description": "Login com email e senha. Retorna token JWT. O token é salvo automaticamente na variável da collection."
+					}
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": "{{base_url}}/api/auth/refresh",
+						"description": "Renova o token. Requer Authorization: Bearer com token válido."
+					}
+				}
+			]
+		},
+		{
+			"name": "Me",
+			"item": [
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": "{{base_url}}/api/me",
+						"description": "Retorna o perfil do usuário autenticado."
+					}
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"displayName\": \"Novo Nome\",\n  \"timezone\": \"America/Sao_Paulo\"\n}"
+						},
+						"url": "{{base_url}}/api/me",
+						"description": "Atualiza displayName e/ou timezone do usuário. Ambos os campos são opcionais."
+					}
+				}
+			]
+		},
+		{
+			"name": "Today",
+			"item": [
+				{
+					"name": "Get Today",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": "{{base_url}}/api/today",
+						"description": "Retorna a entrada do dia de hoje (ou null se não existir)."
+					}
+				},
+				{
+					"name": "Create/Update Today",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"intention\": \"Minha intenção do dia\"\n}"
+						},
+						"url": "{{base_url}}/api/today",
+						"description": "Cria ou reativa a entrada de hoje com a intenção. Se já existir entrada não pulada, retorna 409."
+					}
+				},
+				{
+					"name": "Complete Today",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"completed\": true\n}"
+						},
+						"url": "{{base_url}}/api/today/complete",
+						"description": "Marca a entrada de hoje como concluída (true) ou não concluída (false)."
+					}
+				},
+				{
+					"name": "Skip Today",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": "{{base_url}}/api/today/skip",
+						"description": "Marca o dia de hoje como pulado (sem intenção)."
+					}
+				}
+			]
+		},
+		{
+			"name": "History",
+			"item": [
+				{
+					"name": "Recent (7 days)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": "{{base_url}}/api/history/recent",
+						"description": "Retorna as entradas dos últimos 7 dias."
+					}
+				},
+				{
+					"name": "Month",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/history?month=2025-02",
+							"host": ["{{base_url}}"],
+							"path": ["api", "history"],
+							"query": [
+								{
+									"key": "month",
+									"value": "2025-02",
+									"description": "Formato YYYY-MM"
+								}
+							]
+						},
+						"description": "Retorna todas as entradas do mês e um resumo (total_days, completed, not_completed, skipped)."
+					}
+				}
+			]
+		}
+	]
+}
