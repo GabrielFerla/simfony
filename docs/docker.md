@@ -52,5 +52,31 @@ No `compose.yaml` a `app` usa:
 
 - **DATABASE_URL** com host `database` (nome do serviço).
 - **APP_PORT**: porta no host (padrão 8000). Ex.: `APP_PORT=9000 docker compose up -d`.
+- **JWT_SECRET_KEY**, **JWT_PUBLIC_KEY**, **JWT_PASSPHRASE**: lidos do seu `.env`; no container os caminhos são `/app/config/jwt/private.pem` e `/app/config/jwt/public.pem`.
 
 No `.env` do projeto você não precisa mudar nada para “rodar no Docker”: a `DATABASE_URL` da aplicação em container é definida pelo Compose.
+
+## JWT (token) — erro “encode the JWT token / verify your configuration”
+
+O login e o registro retornam um token JWT. As chaves ficam em `config/jwt/` (arquivos `.pem`), que **não vão para o Git**. Se essa pasta estiver vazia ou sem os `.pem`, a API no Docker falha ao gerar o token.
+
+### Solução: gerar as chaves JWT dentro do container
+
+1. Suba os serviços:
+   ```bash
+   docker compose up -d
+   ```
+2. Gere o par de chaves **dentro do container** (assim os arquivos são criados na pasta montada do projeto):
+   ```bash
+   docker compose exec app php bin/console lexik:jwt:generate-keypair
+   ```
+3. Se o comando pedir **passphrase**, use uma e guarde. Depois coloque a mesma no `.env`:
+   ```env
+   JWT_PASSPHRASE=sua_passphrase_aqui
+   ```
+4. Reinicie a app para carregar as variáveis (ou só faça uma nova requisição de login):
+   ```bash
+   docker compose restart app
+   ```
+
+Assim as chaves ficam em `config/jwt/private.pem` e `config/jwt/public.pem` no seu projeto (montado no container) e o `JWT_PASSPHRASE` do `.env` deve ser o mesmo usado na geração. O token passa a ser gerado e validado corretamente no Docker.

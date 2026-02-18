@@ -13,6 +13,10 @@ services:
     environment:
       APP_ENV: ${APP_ENV:-dev}
       DATABASE_URL: postgresql://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-!ChangeMe!}@database:5432/${POSTGRES_DB:-app}?serverVersion=16&charset=utf8
+      # Caminhos absolutos dentro do container; gere as chaves com: docker compose exec app php bin/console lexik:jwt:generate-keypair
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-/app/config/jwt/private.pem}
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY:-/app/config/jwt/public.pem}
+      JWT_PASSPHRASE: ${JWT_PASSPHRASE:-}
     depends_on:
       database:
         condition: service_healthy
