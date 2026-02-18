@@ -24,7 +24,7 @@ final class Version20250218140000 extends AbstractMigration
             email VARCHAR(180) NOT NULL,
             password_hash VARCHAR(255) NOT NULL,
             display_name VARCHAR(255) NOT NULL,
-            timezone VARCHAR(64) NOT NULL DEFAULT 'America/Sao_Paulo',
+            timezone VARCHAR(64) NOT NULL DEFAULT \'America/Sao_Paulo\',
             created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
             PRIMARY KEY(id)
         )');

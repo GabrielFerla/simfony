@@ -1,7 +1,9 @@
 
+# Override para desenvolvimento: expõe a porta 5432 no host (127.0.0.1:5432)
+# Assim o DATABASE_URL do .env conecta direto no container.
 services:
 ###> doctrine/doctrine-bundle ###
   database:
     ports:
-      - "5432"
+      - "5432:5432"
 ###< doctrine/doctrine-bundle ###
