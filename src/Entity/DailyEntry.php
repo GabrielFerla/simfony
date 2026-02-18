@@ -23,8 +23,8 @@ class DailyEntry
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $user = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $date = null;
+    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    private ?\DateTimeImmutable $date = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $intention = null;
@@ -64,14 +64,16 @@ class DailyEntry
         return $this;
     }
 
-    public function getDate(): ?\DateTimeInterface
+    public function getDate(): ?\DateTimeImmutable
     {
         return $this->date;
     }
 
     public function setDate(\DateTimeInterface $date): static
     {
-        $this->date = $date;
+        $this->date = $date instanceof \DateTimeImmutable
+            ? $date
+            : \DateTimeImmutable::createFromMutable($date);
 
         return $this;
     }
