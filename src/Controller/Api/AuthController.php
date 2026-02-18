@@ -75,6 +75,22 @@ final class AuthController extends AbstractController
         ], Response::HTTP_CREATED);
     }
 
+    //create a login method that uses the json_login bundle
+    #[Route('/login', name: 'login', methods: ['POST'])]
+    public function login(Request $request): JsonResponse
+    {
+        $data = json_decode((string) $request->getContent(), true) ?: [];
+
+        $user = $this->userRepository->findOneByEmail($data['email']);
+        if (!$user instanceof User) {
+            return new JsonResponse(['message' => 'Usuário não encontrado.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $token = $this->jwtManager->create($user);
+
+        return new JsonResponse(['token' => $token]);
+    }
+
     /**
      * Renovar token. Requer Authorization: Bearer {token} válido.
      */
