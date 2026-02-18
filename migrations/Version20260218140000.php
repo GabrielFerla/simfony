@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Etapa 1 — Tabelas user e daily_entry (Só Uma Coisa).
  */
-final class Version20250218140000 extends AbstractMigration
+final class Version20260218140000 extends AbstractMigration
 {
     public function getDescription(): string
     {
