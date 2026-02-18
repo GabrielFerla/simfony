@@ -32,7 +32,7 @@ security:
 
     access_control:
         - { path: ^/api/auth/refresh, roles: ROLE_USER }
-        - { path: ^/api/auth, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/auth, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: ROLE_USER }
 
 when@test:

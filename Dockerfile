@@ -2,10 +2,12 @@
 FROM php:8.4-cli-alpine
 
 # Dependências e extensões PHP para Symfony + PostgreSQL
+# postgresql-libs (libpq) fica instalado para o pdo_pgsql carregar em runtime
 RUN apk add --no-cache \
     git \
     unzip \
     postgresql-dev \
+    postgresql-libs \
     libzip-dev \
     libxml2-dev \
     icu-dev \
